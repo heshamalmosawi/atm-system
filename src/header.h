@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <string.h> 
+#include <unistd.h>
 
 struct Date
 {

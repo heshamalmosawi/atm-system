@@ -82,11 +82,10 @@ void initMenu(struct User *u)
             break;
         case 2:
             // student TODO : add your **Registration** function
-            // printf("Enter username:");
             int isValid = 0;
             int message = 0;
             while (!isValid){
-                isValid = registerAcc(&u, &message);
+                isValid = registerAcc(u->name, u->password, &message);
             }
             r = 1;
             break;
