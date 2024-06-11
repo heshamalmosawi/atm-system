@@ -44,8 +44,11 @@ const char *getPassword(struct User u)
         exit(1);
     }
 
-    while (fscanf(fp, "%s %s", userChecker.name, userChecker.password) != EOF)
-    {
+    lowerize(u.name);
+
+    while (fscanf(fp, "%d %s %s", &userChecker.id, userChecker.name, userChecker.password) != EOF)
+    {   
+        lowerize(userChecker.name);
         if (strcmp(userChecker.name, u.name) == 0)
         {
             fclose(fp);

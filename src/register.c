@@ -19,15 +19,28 @@ int registerAcc(char name[50], char pass[50] , int *msgbool) {
     case 3:
         printf("\n\t\t \033[0;31mUsername choice invalid! Username must be 4 or more characters.\033[0m");
         break;
+    case 4:
+        printf("\n\t\t \033[0;31mUsername choice invalid! Username must consist only of alphanumeric characters.\033[0m");
+        break;
     }
+
+
 
     printf("\n\t\t\t\t\t Enter Username: ");
     
     if (*msgbool == 2){
         printf("%s", name);
     } else {
-        scanf("%s", name);
+        clearInputBuffer();
+        if (fgets(name, 50, stdin) != NULL){
+            name[strcspn(name, "\n")] = 0;
+        }
     }
+
+    if (!isAlphanumeric(name)){
+        *msgbool = 4;
+        return 0;
+    } 
 
     if (strlen(name) < 4){
         *msgbool = 3;
@@ -69,11 +82,6 @@ int registerAcc(char name[50], char pass[50] , int *msgbool) {
         *msgbool = 2;
         return 0;
     }
-    // if (strlen(pass) < 6){
-    //     *msgbool = 2;
-    //     return 0;
-    // }
-
 
     // restore terminal
     if (tcsetattr(fileno(stdin), TCSANOW, &oflags) != 0)
