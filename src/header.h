@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <string.h> 
 #include <unistd.h>
+#include <time.h>
 
 struct Date
 {
@@ -45,3 +46,8 @@ void checkAllAccounts(struct User u);
 // my functions
 int registerAcc();
 void lowerize(char *str);
+void getTodayDate(char *date);
+void clearInputBuffer();
+int isAlphanumeric(const char *str);
+int getNewRid();
+int getUid(char name[50]);
