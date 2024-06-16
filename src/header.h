@@ -42,6 +42,7 @@ const char *getPassword(struct User u);
 void createNewAcc(struct User u);
 void mainMenu(struct User u);
 void checkAllAccounts(struct User u);
+int getAccountFromFile(FILE *ptr, char name[50], struct Record *r);
 
 // my functions
 int registerAcc();
@@ -51,3 +52,4 @@ void clearInputBuffer();
 int isAlphanumeric(const char *str);
 int getNewRid();
 int getUid(char name[50]);
+void updateAccountInfo(struct User u);

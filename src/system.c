@@ -212,37 +212,111 @@ void checkAllAccounts(struct User u)
     success(u);
 }
 
-// This function gets the record ID for a new record id.
-int getNewRid(){
-    FILE *fptr = fopen(RECORDS, "r");
-   if (fptr == NULL){
-        printf("Error! Can't open records.txt file");
+void updateAccountInfo(struct User u){
+    int acc_id, option, bruh;
+    int found = 0;
+    int index = 0;
+    struct Record r;
+    struct Record arr[100]; 
+    char username[50];
+
+
+    FILE *fptr = fopen(RECORDS, "a+");
+    if (fptr == NULL){
+        printf("Error! opening file");
         exit(1);
     }
-    
-    struct Record r;
-    char username[50];
-    
-    while (getAccountFromFile(fptr, username, &r));
 
-    fclose(fptr);
-    return r.id+1;
-}
+    while (!found){
+        system("clear");
+        printf("\n\n\n\t\t\t\t   Bank Management System");
 
-int getUid(char name[50]){
-    FILE *fptr = fopen("./data/users.txt", "r");
-    if (fptr == NULL){
-        perror("Unable to open users file");
-        exit(1); 
-    }
-    struct User u;
-    lowerize(name);
-    while (fscanf(fptr, "%d %s %s", &u.id, u.name, u.password) != EOF){
+        if (bruh == 1){
+            printf("\n\t\t\033[0;31mAccount not found!\033[0m\n");
+        }
+        
+        printf("\n\t\t\t\t\t Enter Accountz ID: ");
+        clearInputBuffer();
+        scanf("%d", &acc_id);
+
         lowerize(u.name);
-        if (strcmp(u.name, name) == 0){
-            fclose(fptr);
-            return u.id;
+
+        rewind(fptr);
+        while (getAccountFromFile(fptr, username, &r)){
+            arr[index] = r;
+            strcpy(arr[index].name, username);
+        
+            lowerize(username);
+            // printf("%s : %s\n", arr[index].name, username);
+            if (strcmp(arr[index].name, u.name) == 0 && arr[index].accountNbr == acc_id) {
+                found = 1;
+                break;
+            }
+            index++;
+        }
+
+        if (found == 0){
+            bruh = 1;
         }
     }
-    return -1;
+        // r = arr[index];
+
+    system("clear");
+    printf("\n\n\n\t\t\t\t   Bank Management System");
+    printf("\n\t\t\t\t\t Choose action: ");
+    printf("\n\t\t[1]- Change phone number\n\n\t\t[2] - Change country\n");
+    prompt:
+    scanf("%d", &option);
+
+    switch (option)
+    {
+    case 1:
+        printf("Please enter new phone number: ");
+        scanf("%d", &arr[index].phone);
+        while (arr[index].phone < 9999999 || arr[index].phone > 100000000){
+            printf("Invalid phone number! Only 8 digit characters accepted.\n");
+            clearInputBuffer();
+            scanf("%d", &arr[index].phone);
+        }
+        break;
+    case 2:
+        printf("Please enter new country: ");
+        clearInputBuffer();
+        if (fgets(arr[index].country, 50, stdin) != NULL){
+            arr[index].country[strcspn(arr[index].country, "\n")] = 0;
+        }
+        while (strlen(arr[index].country) < 2  || !isAlphanumeric(arr[index].country)){
+            printf("Invalid format! Please enter valid country format.\n");
+            if (fgets(arr[index].country, 50, stdin) != NULL){
+                arr[index].country[strcspn(arr[index].country, "\n")] = 0;
+            } r.country; // <----- most probably related to the error
+        }
+        break;
+    default:
+        printf("\033[0;31mInvalid option! Please enter again:\033[0m");
+        goto prompt;
+    }
+
+    // Read the rest of the records
+    while (getAccountFromFile(fptr, username, &r)) {
+        index++;
+        arr[index] = r;
+        // arr[index].userId = r.userId;
+        strcpy(arr[index].name, username);
+    }
+
+    // printf("%s", arr[2].name);
+    // exit(1);
+    rewind(fptr);
+    // fclose(fptr);
+    // arr[index] = r;
+    fptr = freopen(RECORDS, "w", fptr);
+    struct User userz;
+    for (int i = 0; i <= index; i++){
+        strcpy(userz.name, arr[i].name);
+        userz.id = arr[i].userId;
+        saveAccountToFile(fptr, userz, arr[i]);
+    }
+    fclose(fptr);
+    success(u);
 }
