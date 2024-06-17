@@ -29,6 +29,7 @@ void mainMenu(struct User u)
     case 3:
         // student TODO : add your **Check the details of existing accounts** function
         // here
+        checkOneAccount(u);
         break;
     case 4:
         checkAllAccounts(u);
@@ -46,6 +47,7 @@ void mainMenu(struct User u)
         // here
         break;
     case 8:
+        system("clear");
         exit(1);
         break;
     default:

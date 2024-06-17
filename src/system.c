@@ -235,7 +235,7 @@ void updateAccountInfo(struct User u){
             printf("\n\t\t\033[0;31mAccount not found!\033[0m\n");
         }
         
-        printf("\n\t\t\t\t\t Enter Accountz ID: ");
+        printf("\n\t\t\t\t\t Enter Account ID: ");
         clearInputBuffer();
         scanf("%d", &acc_id);
 
@@ -244,10 +244,10 @@ void updateAccountInfo(struct User u){
         rewind(fptr);
         while (getAccountFromFile(fptr, username, &r)){
             arr[index] = r;
-            strcpy(arr[index].name, username);
-        
             lowerize(username);
-            // printf("%s : %s\n", arr[index].name, username);
+            strcpy(arr[index].name, username);
+            printf("%s : %s\n", arr[index].name, username);
+
             if (strcmp(arr[index].name, u.name) == 0 && arr[index].accountNbr == acc_id) {
                 found = 1;
                 break;
@@ -301,15 +301,12 @@ void updateAccountInfo(struct User u){
     while (getAccountFromFile(fptr, username, &r)) {
         index++;
         arr[index] = r;
-        // arr[index].userId = r.userId;
         strcpy(arr[index].name, username);
     }
 
-    // printf("%s", arr[2].name);
-    // exit(1);
-    rewind(fptr);
-    // fclose(fptr);
-    // arr[index] = r;
+
+    rewind(fptr); // rewinding pointer just in case
+
     fptr = freopen(RECORDS, "w", fptr);
     struct User userz;
     for (int i = 0; i <= index; i++){
@@ -318,5 +315,75 @@ void updateAccountInfo(struct User u){
         saveAccountToFile(fptr, userz, arr[i]);
     }
     fclose(fptr);
+    success(u);
+}
+
+void checkOneAccount(struct User u){
+    // initializing variables
+    int accountNumber, chicken;
+    int accountFound = 0;
+    char username[50];
+    struct Record r;
+
+    FILE *fptr = fopen(RECORDS, "r");
+    if (fptr == NULL){
+        printf("error opening file");
+        exit(0);
+    }
+
+    while (!accountFound){
+        system("clear");
+        printf("\n\n\n\t\t\t\t   Bank Management System");
+
+        if (chicken == 1){
+            printf("\n\t\t\033[0;31mAccount not found!\033[0m\n");
+        }
+        
+        printf("\n\t\t\t\t\t Enter Account ID: ");
+        clearInputBuffer();
+        scanf("%d", &accountNumber);
+
+        lowerize(u.name);
+
+        rewind(fptr);
+        while (getAccountFromFile(fptr, username, &r)){        
+            lowerize(username);
+
+            if (strcmp(username, u.name) == 0 && r.accountNbr == accountNumber) {
+                accountFound = 1;
+                break;
+            }
+        }
+
+        if (accountFound == 0){
+            chicken = 1;
+        }
+    }
+
+    system("clear");
+    printf("Account number: %d\nDeposit Date: %02d/%02d/%02d", r.accountNbr, r.deposit.month, r.deposit.day, r.deposit.year);
+    printf("\nCountry: %s\nPhone number: %d\nAmount deposited: $%.2f\nType Of Account: %s\n", r.country, r.phone, r.amount, r.accountType);
+
+    double interest;
+    if (strcmp(r.accountType, "current") == 0) {
+        printf("\n\nYou will not get interests because the account is of type current");
+
+    } else if (strcmp(r.accountType, "saving") == 0){
+        interest = (r.amount * 0.07) / 12; // 7% divided on each month
+        printf("You will get $%.2f as interest on day %02d of every month\n", interest, r.deposit.day);
+
+    } else if (strcmp(r.accountType, "fixed01") == 0){
+        interest = (r.amount * 0.04); // 4% in an entire year
+        printf("You will get $%.2f as interest on %02d/%02d/%04d\n", interest, r.deposit.month, r.deposit.day, r.deposit.year+1);
+    } else if (strcmp(r.accountType, "fixed02") == 0){
+        interest = (r.amount * 0.05) * 2; // 5% in TWO years
+        printf("You will get $%.2f as interest on %02d/%02d/%04d\n", interest, r.deposit.month, r.deposit.day, r.deposit.year+2);
+    } else if (strcmp(r.accountType, "fixed03") == 0){
+        interest = (r.amount * 0.08) * 3; // 8% in THREE years
+        printf("You will get $%.2f as interest on %02d/%02d/%04d\n", interest, r.deposit.month, r.deposit.day, r.deposit.year+3);
+    } else {
+        printf("\033[0;31mINTERNAL SERVER ERROR\033[0m");
+    }
+
     success(u);
 }

@@ -53,3 +53,4 @@ int isAlphanumeric(const char *str);
 int getNewRid();
 int getUid(char name[50]);
 void updateAccountInfo(struct User u);
+void checkOneAccount(struct User u);
