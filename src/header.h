@@ -56,3 +56,4 @@ void updateAccountInfo(struct User u);
 void checkOneAccount(struct User u);
 void makeTransaction(struct User u);
 void removeExistingAcccount(struct User u);
+void transferAccOwner(struct User u);

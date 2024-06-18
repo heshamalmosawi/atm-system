@@ -292,7 +292,7 @@ void updateAccountInfo(struct User u){
             printf("Invalid format! Please enter valid country format.\n");
             if (fgets(arr[index].country, 50, stdin) != NULL){
                 arr[index].country[strcspn(arr[index].country, "\n")] = 0;
-            } r.country; // <----- most probably related to the error
+            } r.country; 
         }
         break;
     default:
@@ -499,7 +499,7 @@ void removeExistingAcccount(struct User u){
     struct Record r, allRec[200];
     system("clear");
     printf("\n\n\n\t\t\t\t   Bank Management System");
-    printf("\n\t\t\gittRemove Account");
+    printf("\n\t\t\tRemove Account\n");
 
     FILE *fptr = fopen(RECORDS, "r");
     if (fptr == NULL){
@@ -545,6 +545,99 @@ void removeExistingAcccount(struct User u){
         strcpy(userz.name, allRec[i].name);
         userz.id = allRec[i].userId;
         saveAccountToFile(fptr, userz, allRec[i]);
+    }
+    fclose(fptr);
+    success(u);
+}
+
+void transferAccOwner(struct User u){
+    int acc_id;
+    int index = 0;
+    char username[50];
+    struct Record r, allRecs[200];
+    system("clear");
+    printf("\n\n\n\t\t\t\t   Bank Management System");
+
+    FILE *fptr = fopen(RECORDS, "r");
+    if (fptr == NULL){
+        printf("Error! opening file");
+        exit(1);
+    }
+
+    int valid = 0;
+    while (!valid){
+        index = 0;
+        printf("\n\tEnter the account number you want to transfer ownership: ");
+        clearInputBuffer();
+        scanf("%d", &acc_id);
+
+        lowerize(u.name);
+
+        rewind(fptr);
+        while (getAccountFromFile(fptr, username, &r)){
+            allRecs[index] = r;
+            lowerize(username);
+            strcpy(allRecs[index].name, username);
+            // printf("%s, %d : %s %d\n", allRecs[index].name, allRecs[index].id, username, acc_id);
+
+            if (strcmp(allRecs[index].name, u.name) == 0 && allRecs[index].accountNbr == acc_id) {
+                valid = 1;
+                break;
+            }
+            index++;
+        } 
+        if (!valid) {
+            printf("\nInvalid account number.");
+        }
+    }
+    
+    printf("\n\t\t==== Transfering account:\n");
+    printf("Account number: %d\nDeposit Date: %02d/%02d/%02d", allRecs[index].accountNbr, allRecs[index].deposit.month, allRecs[index].deposit.day, allRecs[index].deposit.year);
+    printf("\nCountry: %s\nPhone number: %d\nAmount deposited: $%.2f\nType Of Account: %s\n", allRecs[index].country, allRecs[index].phone, allRecs[index].amount, allRecs[index].accountType);
+    
+    char toTransferName[50];
+    int toTransferID;
+    valid = 0;
+    while (!valid){
+        printf("\nWhich user you want to transfer ownership to (user name): ");
+        scanf("%s", toTransferName);
+        lowerize(toTransferName);
+
+        FILE *users = fopen("./data/users.txt", "r");
+        char user_id[50], uname[50], password[50];
+        while (fscanf(users, "%s %s %s", user_id, uname, password) != EOF){
+            lowerize(uname);
+            if (strcmp(uname, toTransferName) == 0){
+                toTransferID = atoi(user_id);
+                valid = 1;
+                break;
+            }   
+        }
+        fclose(users);
+        if (valid == 0){
+            printf("\nUser not found!\n");
+        }
+    }
+
+    /* Tranferring aka changing the name and id of the record */
+    allRecs[index].id = toTransferID;
+    strcpy(allRecs[index].name, toTransferName);
+
+    /* Copying the remaining records*/
+    while (getAccountFromFile(fptr, username, &r)) {
+        index++;
+        allRecs[index] = r;
+        strcpy(allRecs[index].name, username);
+    }
+
+    rewind(fptr); // rewinding pointer just in case
+
+    fptr = freopen(RECORDS, "w", fptr);
+    struct User userz;
+    for (int i = 0; i <= index; i++){
+        strcpy(userz.name, allRecs[i].name);
+        userz.id = allRecs[i].userId;
+        saveAccountToFile(fptr, userz, allRecs[i]);
     }
     fclose(fptr);
     success(u);
