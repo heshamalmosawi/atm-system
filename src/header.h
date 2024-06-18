@@ -55,3 +55,4 @@ int getUid(char name[50]);
 void updateAccountInfo(struct User u);
 void checkOneAccount(struct User u);
 void makeTransaction(struct User u);
+void removeExistingAcccount(struct User u);

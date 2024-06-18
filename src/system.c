@@ -420,16 +420,16 @@ void makeTransaction(struct User u){
             allRecs[index] = r;
             lowerize(username);
             strcpy(allRecs[index].name, username);
-            printf("%s, %d : %s %d\n", allRecs[index].name, allRecs[index].id, username, acc_id);
+            // printf("%s, %d : %s %d\n", allRecs[index].name, allRecs[index].id, username, acc_id);
 
             if (strcmp(allRecs[index].name, u.name) == 0 && allRecs[index].accountNbr == acc_id) {
                 valid = 1;
                 break;
             }
             index++;
-            if (valid) {
-                printf("\nInvalid account number.");
-            }
+        } 
+        if (!valid) {
+            printf("\nInvalid account number.");
         }
     }
     
@@ -486,6 +486,65 @@ void makeTransaction(struct User u){
         strcpy(userz.name, allRecs[i].name);
         userz.id = allRecs[i].userId;
         saveAccountToFile(fptr, userz, allRecs[i]);
+    }
+    fclose(fptr);
+    success(u);
+}
+
+void removeExistingAcccount(struct User u){
+    int valid = 0;
+    int acc_id;
+    int index = 0;
+    char username[50];
+    struct Record r, allRec[200];
+    system("clear");
+    printf("\n\n\n\t\t\t\t   Bank Management System");
+    printf("\n\t\t\gittRemove Account");
+
+    FILE *fptr = fopen(RECORDS, "r");
+    if (fptr == NULL){
+        printf("error opening file");
+        exit(1);
+    }
+
+
+
+    while (!valid){
+        index = 0;
+        printf("\nEnter the account number you want to delete: ");
+        clearInputBuffer();
+        scanf("%d", &acc_id);
+
+        lowerize(u.name);
+
+        rewind(fptr);
+        while (getAccountFromFile(fptr, username, &r)){
+            lowerize(username);
+
+            printf("%s, %d : %s %d\n", username, r.id, username, acc_id);
+
+            if (strcmp(username, u.name) == 0 && r.accountNbr == acc_id) {
+                valid = 1;
+                continue;
+            } else {
+                allRec[index] = r;
+                strcpy(allRec[index].name, username);
+            }
+            index++;
+        }
+        if (!valid) {
+            printf("\nInvalid account number.");
+        }
+    }
+
+    rewind(fptr); // rewinding pointer just in case
+
+    fptr = freopen(RECORDS, "w", fptr);
+    struct User userz;
+    for (int i = 0; i < index; i++){
+        strcpy(userz.name, allRec[i].name);
+        userz.id = allRec[i].userId;
+        saveAccountToFile(fptr, userz, allRec[i]);
     }
     fclose(fptr);
     success(u);
