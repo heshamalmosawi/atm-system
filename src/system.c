@@ -194,10 +194,12 @@ void checkAllAccounts(struct User u)
     printf("\t\t====== All accounts from user, %s =====\n\n", u.name);
     while (getAccountFromFile(pf, userName, &r))
     {
+        lowerize(userName);
+        lowerize(u.name);
         if (strcmp(userName, u.name) == 0)
         {
             printf("_____________________\n");
-            printf("\nAccount number:%d\nDeposit Date:%d/%d/%d \ncountry:%s \nPhone number:%d \nAmount deposited: $%.2f \nType Of Account:%s\n",
+            printf("\nAccount number: %d\nDeposit Date: %d/%d/%d \ncountry: %s \nPhone number: %d \nAmount deposited: $%.2f \nType Of Account: %s\n",
                    r.accountNbr,
                    r.deposit.day,
                    r.deposit.month,
@@ -228,6 +230,7 @@ void updateAccountInfo(struct User u){
     }
 
     while (!found){
+        index = 0;
         system("clear");
         printf("\n\n\n\t\t\t\t   Bank Management System");
 
@@ -246,7 +249,7 @@ void updateAccountInfo(struct User u){
             arr[index] = r;
             lowerize(username);
             strcpy(arr[index].name, username);
-            printf("%s : %s\n", arr[index].name, username);
+            // printf("%s : %s\n", arr[index].name, username);
 
             if (strcmp(arr[index].name, u.name) == 0 && arr[index].accountNbr == acc_id) {
                 found = 1;
@@ -385,5 +388,105 @@ void checkOneAccount(struct User u){
         printf("\033[0;31mINTERNAL SERVER ERROR\033[0m");
     }
 
+    success(u);
+}
+
+void makeTransaction(struct User u){
+    int acc_id;
+    int valid = 0;
+    int index = 0;
+    char username[50];
+    struct Record r, allRecs[200];
+    system("clear");
+    printf("\n\n\n\t\t\t\t   Bank Management System");
+    printf("\n\t\tMake Transaction");
+
+    FILE *fptr = fopen(RECORDS, "r");
+    if (fptr == NULL){
+        printf("error opening file");
+        exit(1);
+    }
+
+    while (!valid){
+        index = 0;
+        printf("\n\tEnter the account number: ");
+        clearInputBuffer();
+        scanf("%d", &acc_id);
+
+        lowerize(u.name);
+
+        rewind(fptr);
+        while (getAccountFromFile(fptr, username, &r)){
+            allRecs[index] = r;
+            lowerize(username);
+            strcpy(allRecs[index].name, username);
+            printf("%s, %d : %s %d\n", allRecs[index].name, allRecs[index].id, username, acc_id);
+
+            if (strcmp(allRecs[index].name, u.name) == 0 && allRecs[index].accountNbr == acc_id) {
+                valid = 1;
+                break;
+            }
+            index++;
+            if (valid) {
+                printf("\nInvalid account number.");
+            }
+        }
+    }
+    
+    valid = 0;
+    int option = 0;
+    while (!valid){
+        printf("Do you want to:\n\t1-> Withdaw \n\t2-> Deposit\n");
+        clearInputBuffer();
+        scanf("%d", &option);
+        if (option < 1 || option > 2){
+            printf("Invalid option! Please try again.");
+        } else {
+            valid = 1;
+        }
+    }
+
+    valid = 0;
+    while (!valid){
+        double amount = 0;
+        if (option == 1){
+            printf("Enter the amount you want to withdraw: ");
+            scanf("%lf", &amount);
+            if (amount > r.amount){
+                printf("The amount you chose to withdraw is superior to your available balance!\n");
+            } else if (amount <= 0){
+                printf("Invalid withdrawal amount\n");
+            } else {
+                allRecs[index].amount -= amount; 
+                valid = 1;
+            }
+            
+        } else if (option == 2){
+            printf("Enter the amount you want to deposit: ");
+            scanf("%lf", &amount);
+            if (amount <=0 || amount >= 10000000){
+                printf("Invalid deposit amount. Please enter a valid amount.\n");
+            } else {
+                allRecs[index].amount += amount; 
+                valid = 1;
+            }
+        }
+    }
+    while (getAccountFromFile(fptr, username, &r)){
+        index++;
+        allRecs[index] = r;
+        strcpy(allRecs[index].name, username);
+    }
+
+    rewind(fptr); // rewinding pointer just in case
+
+    fptr = freopen(RECORDS, "w", fptr);
+    struct User userz;
+    for (int i = 0; i <= index; i++){
+        strcpy(userz.name, allRecs[i].name);
+        userz.id = allRecs[i].userId;
+        saveAccountToFile(fptr, userz, allRecs[i]);
+    }
+    fclose(fptr);
     success(u);
 }
