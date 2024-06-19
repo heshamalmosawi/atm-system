@@ -80,7 +80,6 @@ noAccount:
     getTodayDate(date); 
     printf("%s", date);
     sscanf(date, "%d/%d/%d", &r.deposit.month, &r.deposit.day, &r.deposit.year);
-    // printf("Extracted Date - Month: %d, Day: %d, Year: %d\n", r.deposit.month, r.deposit.day, r.deposit.year);
 
 
     printf("\nEnter the account number:");
@@ -211,7 +210,6 @@ void updateAccountInfo(struct User u){
             arr[index] = r;
             lowerize(username);
             strcpy(arr[index].name, username);
-            // printf("%s : %s\n", arr[index].name, username);
 
             if (strcmp(arr[index].name, u.name) == 0 && arr[index].accountNbr == acc_id) {
                 found = 1;
@@ -224,7 +222,6 @@ void updateAccountInfo(struct User u){
             bruh = 1;
         }
     }
-        // r = arr[index];
 
     system("clear");
     printf("\n\n\n\t\t\t\t   Bank Management System");
@@ -250,7 +247,7 @@ void updateAccountInfo(struct User u){
             validity = scanf("%d", &arr[index].phone);
             clearInputBuffer();
         }
-        while (arr[index].phone > 9999999 || arr[index].phone > 100000000){
+        while (arr[index].phone < 9999999 || arr[index].phone > 100000000){
 
             printf("Invalid phone number! Only 8 digit characters accepted.\n");
             validity = scanf("%d", &arr[index].phone);
@@ -264,7 +261,6 @@ void updateAccountInfo(struct User u){
         break;
     case 2:
         printf("Please enter new country: ");
-        clearInputBuffer();
         if (fgets(arr[index].country, 50, stdin) != NULL){
             arr[index].country[strcspn(arr[index].country, "\n")] = 0;
         }
@@ -277,9 +273,9 @@ void updateAccountInfo(struct User u){
         break;
     default:
         printf("\033[0;31mInvalid option! Please enter again:\033[0m");
-
-
+        goto prompt;
     }
+    
     // Read the rest of the records
     while (getAccountFromFile(fptr, username, &r)) {
         index++;
@@ -323,8 +319,8 @@ void checkOneAccount(struct User u){
         }
         
         printf("\n\t\t\t\t\t Enter Account ID: ");
-        clearInputBuffer();
         scanf("%d", &accountNumber);
+        clearInputBuffer();
 
         lowerize(u.name);
 
@@ -386,12 +382,18 @@ void makeTransaction(struct User u){
         printf("error opening file");
         exit(1);
     }
-
+    int inputValidation = 1;
     while (!valid){
         index = 0;
         printf("\n\tEnter the account number: ");
+        inputValidation = scanf("%d", &acc_id);
         clearInputBuffer();
-        scanf("%d", &acc_id);
+
+        while (inputValidation != 1){
+            printf("\nInvalid input. Please input a vaild account number: ");
+            inputValidation = scanf("%d", &acc_id);
+            clearInputBuffer();
+        }
 
         lowerize(u.name);
 
@@ -400,7 +402,6 @@ void makeTransaction(struct User u){
             allRecs[index] = r;
             lowerize(username);
             strcpy(allRecs[index].name, username);
-            // printf("%s, %d : %s %d\n", allRecs[index].name, allRecs[index].id, username, acc_id);
 
             if (strcmp(allRecs[index].name, u.name) == 0 && allRecs[index].accountNbr == acc_id) {
                 valid = 1;
@@ -416,11 +417,11 @@ void makeTransaction(struct User u){
     valid = 0;
     int option = 0;
     while (!valid){
-        printf("Do you want to:\n\t1-> Withdaw \n\t2-> Deposit\n");
-        clearInputBuffer();
+        printf("Do you want to:\n\t1-> Withdraw \n\t2-> Deposit\n");
         scanf("%d", &option);
-        if (option < 1 || option > 2){
-            printf("Invalid option! Please try again.");
+        clearInputBuffer();
+        if (option != 1 && option != 2){
+            printf("Invalid option! Please try again. ");
         } else {
             valid = 1;
         }
@@ -428,11 +429,11 @@ void makeTransaction(struct User u){
 
     valid = 0;
     while (!valid){
-        clearInputBuffer();
         double amount = 0;
         if (option == 1){
             printf("Enter the amount you want to withdraw: ");
             scanf("%lf", &amount);
+            clearInputBuffer();
             if (amount > r.amount){
                 printf("The amount you chose to withdraw is superior to your available balance!\n");
             } else if (amount <= 0){
@@ -445,6 +446,7 @@ void makeTransaction(struct User u){
         } else if (option == 2){
             printf("Enter the amount you want to deposit: ");
             scanf("%lf", &amount);
+            clearInputBuffer();
             if (amount <=0 || amount >= 10000000){
                 printf("Invalid deposit amount. Please enter a valid amount.\n");
             } else {
@@ -493,16 +495,14 @@ void removeExistingAcccount(struct User u){
     while (!valid){
         index = 0;
         printf("\nEnter the account number you want to delete: ");
-        clearInputBuffer();
         scanf("%d", &acc_id);
+        clearInputBuffer();
 
         lowerize(u.name);
 
         rewind(fptr);
         while (getAccountFromFile(fptr, username, &r)){
             lowerize(username);
-
-            printf("%s, %d : %s %d\n", username, r.id, username, acc_id);
 
             if (strcmp(username, u.name) == 0 && r.accountNbr == acc_id) {
                 valid = 1;
@@ -514,7 +514,7 @@ void removeExistingAcccount(struct User u){
             index++;
         }
         if (!valid) {
-            printf("\nInvalid account number.");
+            printf("\nAccount number not found.");
         }
     }
 
@@ -549,8 +549,8 @@ void transferAccOwner(struct User u){
     while (!valid){
         index = 0;
         printf("\n\tEnter the account number you want to transfer ownership: ");
-        clearInputBuffer();
         scanf("%d", &acc_id);
+        clearInputBuffer();
 
         lowerize(u.name);
 
