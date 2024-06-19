@@ -6,12 +6,12 @@
 This project is a command-line ATM management system developed in C. The system allows users to perform various banking operations such as registration, bank account creation, transactions and more.
 
 ## Features
-    - User registration and login
-    - Account creation and management
-    - Check account details
-    - Make transactions (deposit and withdraw)
-    - Delete accounts
-    - Transfer account ownership
+- User registration and login
+- Account creation and management
+- Check account details
+- Make transactions (deposit and withdraw)
+- Delete accounts
+- Transfer account ownership
 
 ## Usage
 1. Compile the file using the 'Makefile' provided. Open a terminal and run:
