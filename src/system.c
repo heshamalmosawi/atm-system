@@ -83,8 +83,8 @@ noAccount:
 
 
     printf("\nEnter the account number:");
-    scanf("%d", &r.accountNbr);
-    while (r.accountNbr <= 0 || r.accountNbr > 99999999){
+    int validnum = scanf("%d", &r.accountNbr);
+    while (validnum == 1 || (r.accountNbr <= 0 || r.accountNbr > 99999999)){
         printf("Invalid Account number! Please enter a valid number.\n");
         clearInputBuffer();
         scanf("%d", &r.accountNbr);
