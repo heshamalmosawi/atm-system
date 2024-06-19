@@ -14,47 +14,40 @@ void mainMenu(struct User u)
     printf("\n\t\t[6]- Remove existing account\n");
     printf("\n\t\t[7]- Transfer ownership\n");
     printf("\n\t\t[8]- Exit\n");
-    scanf("%d", &option);
 
-    switch (option)
-    {
-    case 1:
-        createNewAcc(u);
-        break;
-    case 2:
-        // DONE --> student TODO : add your **Update account information** function 
-        updateAccountInfo(u);
-        // here
-        break;
-    case 3:
-        // DONE --> student TODO : add your **Check the details of existing accounts** function
-        // here
-        checkOneAccount(u);
-        break;
-    case 4:
-        checkAllAccounts(u);
-        break;
-    case 5:
-        // DONE --> student TODO : add your **Make transaction** function
-        // here
-        makeTransaction(u);
-        break;
-    case 6:
-        // DONE --> student TODO : add your **Remove existing account** function
-        // here
-        removeExistingAcccount(u);
-        break;
-    case 7:
-        // student TODO : add your **Transfer owner** function
-        // here
-        transferAccOwner(u);
-        break;
-    case 8:
-        system("clear");
-        exit(1);
-        break;
-    default:
-        printf("Invalid operation!\n");
+    while (1){
+        scanf("%d", &option);
+        clearInputBuffer();
+        switch (option)
+        {
+            case 1:
+                createNewAcc(u);
+                break;
+            case 2:
+                updateAccountInfo(u);
+                break;
+            case 3:
+                checkOneAccount(u);
+                break;
+            case 4:
+                checkAllAccounts(u);
+                break;
+            case 5:
+                makeTransaction(u);
+                break;
+            case 6:
+                removeExistingAcccount(u);
+                break;
+            case 7:
+                transferAccOwner(u);
+                break;
+            case 8:
+                system("clear");
+                exit(1);
+                break;
+            default:
+                printf("Invalid operation!\n");
+        }
     }
 };
 
@@ -71,6 +64,7 @@ void initMenu(struct User *u)
     while (!r)
     {
         scanf("%d", &option);
+        clearInputBuffer();
         switch (option)
         {
         case 1:
@@ -87,12 +81,7 @@ void initMenu(struct User *u)
             r = 1;
             break;
         case 2:
-            // student TODO : add your **Registration** function
-            int isValid = 0;
-            int message = 0;
-            while (!isValid){
-                isValid = registerAcc(u->name, u->password, &message);
-            }
+            registerAcc(u->name, u->password);
             r = 1;
             break;
         case 3:
@@ -101,6 +90,7 @@ void initMenu(struct User *u)
             break;
         default:
             printf("Insert a valid operation!\n");
+            break;
         }
     }
 };

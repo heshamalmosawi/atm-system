@@ -45,7 +45,7 @@ void checkAllAccounts(struct User u);
 int getAccountFromFile(FILE *ptr, char name[50], struct Record *r);
 
 // my functions
-int registerAcc();
+void registerAcc();
 void lowerize(char *str);
 void getTodayDate(char *date);
 void clearInputBuffer();

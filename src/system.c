@@ -34,58 +34,20 @@ void saveAccountToFile(FILE *ptr, struct User u, struct Record r)
             r.accountType);
 }
 
-void stayOrReturn(int notGood, void f(struct User u), struct User u)
-{
-    int option;
-    if (notGood == 0)
-    {
-        system("clear");
-        printf("\n✖ Record not found!!\n");
-    invalid:
-        printf("\nEnter 0 to try again, 1 to return to main menu and 2 to exit:");
-        scanf("%d", &option);
-        if (option == 0)
-            f(u);
-        else if (option == 1)
-            mainMenu(u);
-        else if (option == 2)
-            exit(0);
-        else
-        {
-            printf("Insert a valid operation!\n");
-            goto invalid;
-        }
-    }
-    else
-    {
-        printf("\nEnter 1 to go to the main menu and 0 to exit:");
-        scanf("%d", &option);
-    }
-    if (option == 1)
-    {
-        system("clear");
-        mainMenu(u);
-    }
-    else
-    {
-        system("clear");
-        exit(1);
-    }
-}
-
 void success(struct User u)
 {
-    int option;
+    int optionz;
     printf("\n✔ Success!\n\n");
 invalid:
     printf("Enter 1 to go to the main menu and 0 to exit!\n");
-    scanf("%d", &option);
+    scanf("%d", &optionz);
+    clearInputBuffer();
     system("clear");
-    if (option == 1)
+    if (optionz == 1)
     {
         mainMenu(u);
     }
-    else if (option == 0)
+    else if (optionz == 0)
     {
         exit(1);
     }
@@ -215,7 +177,7 @@ void checkAllAccounts(struct User u)
 }
 
 void updateAccountInfo(struct User u){
-    int acc_id, option, bruh;
+    int acc_id, updateAction, bruh;
     int found = 0;
     int index = 0;
     struct Record r;
@@ -239,8 +201,8 @@ void updateAccountInfo(struct User u){
         }
         
         printf("\n\t\t\t\t\t Enter Account ID: ");
-        clearInputBuffer();
         scanf("%d", &acc_id);
+        clearInputBuffer();
 
         lowerize(u.name);
 
@@ -267,19 +229,37 @@ void updateAccountInfo(struct User u){
     system("clear");
     printf("\n\n\n\t\t\t\t   Bank Management System");
     printf("\n\t\t\t\t\t Choose action: ");
-    printf("\n\t\t[1]- Change phone number\n\n\t\t[2] - Change country\n");
+    printf("\n\t\t[1] - Change phone number\n\n\t\t[2] - Change country\n");
+    int validity = 1;
     prompt:
-    scanf("%d", &option);
-
-    switch (option)
+    validity = scanf("%d", &updateAction);
+    clearInputBuffer();
+    while (validity != 1){
+        printf("\033[0;31mInvalid option! Please enter a number: \033[0m");
+        validity = scanf("%d", &updateAction);
+        clearInputBuffer();
+    }
+    switch (updateAction)
     {
     case 1:
         printf("Please enter new phone number: ");
-        scanf("%d", &arr[index].phone);
-        while (arr[index].phone < 9999999 || arr[index].phone > 100000000){
-            printf("Invalid phone number! Only 8 digit characters accepted.\n");
+        validity = scanf("%d", &arr[index].phone);
+        clearInputBuffer();
+        while (validity != 1){
+            printf("\033[0;31mInvalid option! Please enter a number: \033[0m");
+            validity = scanf("%d", &arr[index].phone);
             clearInputBuffer();
-            scanf("%d", &arr[index].phone);
+        }
+        while (arr[index].phone > 9999999 || arr[index].phone > 100000000){
+
+            printf("Invalid phone number! Only 8 digit characters accepted.\n");
+            validity = scanf("%d", &arr[index].phone);
+            while (validity != 1){
+                printf("\033[0;31mInvalid option! Please enter a number: \033[0m");
+                validity = scanf("%d", &arr[index].phone);
+                clearInputBuffer();
+            }
+            clearInputBuffer();
         }
         break;
     case 2:
@@ -292,14 +272,14 @@ void updateAccountInfo(struct User u){
             printf("Invalid format! Please enter valid country format.\n");
             if (fgets(arr[index].country, 50, stdin) != NULL){
                 arr[index].country[strcspn(arr[index].country, "\n")] = 0;
-            } r.country; 
+            }
         }
         break;
     default:
         printf("\033[0;31mInvalid option! Please enter again:\033[0m");
-        goto prompt;
-    }
 
+
+    }
     // Read the rest of the records
     while (getAccountFromFile(fptr, username, &r)) {
         index++;
@@ -448,6 +428,7 @@ void makeTransaction(struct User u){
 
     valid = 0;
     while (!valid){
+        clearInputBuffer();
         double amount = 0;
         if (option == 1){
             printf("Enter the amount you want to withdraw: ");
